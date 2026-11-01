@@ -1,0 +1,17 @@
+# Sestaveni
+bin/
+obj/
+*.user
+*.suo
+.vs/
+.idea/
+.vscode/
+TestResults/
+
+# Lokalni nastaveni a tajne udaje
+appsettings.Development.json
+*.env
+.env
+
+.DS_Store
+Thumbs.db
