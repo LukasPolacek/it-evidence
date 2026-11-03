@@ -1,3 +1,5 @@
+using ItEvidence.Domain.Common;
+
 namespace ItEvidence.Domain.Assets;
 
 /// <summary>
@@ -7,7 +9,8 @@ public class AssetAssignment
 {
     public AssetAssignment(Guid employeeId, DateTimeOffset assignedAt)
     {
-        throw new NotImplementedException();
+        EmployeeId = employeeId;
+        AssignedAt = assignedAt;
     }
 
     public Guid EmployeeId { get; }
@@ -20,7 +23,10 @@ public class AssetAssignment
     public string? ReturnNote { get; private set; }
 
     /// <summary>Prideleni trva (zarizeni jeste nebylo vraceno).</summary>
-    public bool IsActive => throw new NotImplementedException();
+    public bool IsActive
+    {
+        get { return ReturnedAt == null; }
+    }
 
     /// <summary>
     /// Ukonci prideleni. Cas vraceni nesmi byt driv nez cas prideleni
@@ -28,6 +34,12 @@ public class AssetAssignment
     /// </summary>
     public void Close(DateTimeOffset returnedAt, string? note)
     {
-        throw new NotImplementedException();
+        if (!IsActive)
+            throw new DomainException("Přiřazení už je uzavřené.");
+        if (returnedAt < AssignedAt)
+            throw new DomainException("Čas vrácení je dřív než čas přiřazení.");
+
+        ReturnedAt = returnedAt;
+        ReturnNote = note;
     }
 }
