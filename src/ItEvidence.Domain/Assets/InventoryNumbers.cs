@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace ItEvidence.Domain.Assets;
 
 /// <summary>
@@ -12,7 +14,11 @@ public static class InventoryNumbers
     /// </summary>
     public static string Format(int year, int sequence)
     {
-        throw new NotImplementedException();
+        if ((year < 2000) || (year > 2099))
+            throw new ArgumentOutOfRangeException(nameof(year));
+        if ((sequence < 1) || (sequence > 9999))
+            throw new ArgumentOutOfRangeException(nameof(sequence));
+        return $"IT-{year}-{sequence:D4}";
     }
 
     /// <summary>
@@ -20,7 +26,15 @@ public static class InventoryNumbers
     /// </summary>
     public static bool IsValid(string? value)
     {
-        throw new NotImplementedException();
+        if (value == null)
+            return false;
+        if (value.EndsWith("-0000"))
+            return false;
+        if (string.IsNullOrEmpty(value))
+            return false;
+        if (!Regex.IsMatch(value, @"^IT-\d{4}-\d{4}$"))
+            return false;
+        return true;
     }
 
     /// <summary>
@@ -30,6 +44,17 @@ public static class InventoryNumbers
     /// </summary>
     public static string Next(int year, IEnumerable<string> existingNumbers)
     {
-        throw new NotImplementedException();
+        int highest = 0;               
+        string prefix = $"IT-{year}-"; 
+        foreach (string number in existingNumbers)
+        {
+            if (!IsValid(number) || !number.StartsWith(prefix))
+                continue;
+
+            int sequence = int.Parse(number.Substring(8)); 
+            if (sequence > highest)
+                highest = sequence;
+        }
+        return Format(year, highest + 1);
     }
 }
